@@ -1,0 +1,3 @@
+install golang migrate using one command
+ curl -s https://packagecloud.io/install/repositories/golang-migrate/migrate/script.deb.sh | sudo bash
+

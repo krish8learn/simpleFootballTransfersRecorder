@@ -1,0 +1,51 @@
+
+Table footballclub as FC {
+  fc_id int [pk, increment] // auto-increment
+  club_name varchar [not null]
+  country_fc varchar [not null]
+  balance bigint [not null, note: 'can be positive or negative']
+  created_at timestampz [not null, default: `now()`]
+  
+   Indexes {
+    club_name
+  }
+}
+
+
+Table player as P {
+  p_id int [pk, increment] // auto-increment
+  player_name varchar [not null, unique]
+  position varchar [not null]
+  country_pl varchar [not null]
+  value bigint [not null, note: 'must be positive']
+  footballclub_id bigint [ref: > FC.fc_id, not null]
+  created_at timestamptz [not null, default: `now()`]
+
+  Indexes {
+    player_name
+    (player_name, footballclub_id)
+  }
+}
+
+Table transfers {
+  t_id int [pk, increment] // auto-increment
+  season bigint [not null]
+  player_id int [ref: > P.p_id, not null]
+  source_club varchar [ref: > FC.fc_id, not null]
+  destination_club varchar [ref: > FC.fc_id, not null]
+  amount bigint [not null, note: 'must be positive']
+  created_at timestamptz [not null, default: `now()`]
+
+  Indexes {
+    player_id
+    source_club
+    destination_club
+    (source_club, destination_club)
+  }
+}
+
+https://dbdiagram.io/d/61ddf398f8370f0a2ef6f4af
+
+
+
+

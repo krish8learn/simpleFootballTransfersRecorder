@@ -1,0 +1,13 @@
+container ID of postgres ---> 44fc37bd1bcdc2ec767d3ccb8a87204322737ab7fb551f9d4801c8211b3b64c4
+
+to create container ---> sudo docker run --name postgres -e POSTGRES_USER=root -e POSTGRES_PASSWORD=[password] -p 5432:5432 -d postgres:latest
+
+to get into postgres server of docker postgres container--->sudo docker exec -it postgres psql -U root
+
+to see the all available docker container --> sudo docker ps -a
+
+to see all the running docker container ---> sudo docker ps
+
+to re-start/start a docker container -->sudo docker start container_name (sudo docker start postgres)
+
+to stop a docker container --> sudo docker stop container_name
