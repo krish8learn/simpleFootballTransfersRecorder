@@ -84,9 +84,6 @@ func TestQueries_Deletefootballclub(t *testing.T) {
 	if connerr != nil {
 		log.Fatalln("Connection Failed, Error--> ", connerr)
 	}
-	func (db DBTX) *fields {
-		return &fields{db: db}
-	}(conn)
 	
 	var dbExec *fields
 	dbExec = func (db DBTX) *fields {
