@@ -9,6 +9,8 @@ import (
 	"testing"
 
 	"github.com/krish8learn/simpleFootballTransfersRecorder/Util"
+	"database/sql"
+	"log"
 )
 
 func TestQueries_Createfootballclub(t *testing.T) {
@@ -65,9 +67,31 @@ func TestQueries_Createfootballclub(t *testing.T) {
 }
 
 func TestQueries_Deletefootballclub(t *testing.T) {
+	testCreateData, testCreateErr := testQueries.Createfootballclub(context.Background(), CreatefootballclubParams{
+		ClubName: Util.RandomfootballclubName(),
+		CountryFc: Util.Randomcountryfc(),
+		Balance: Util.Randombalance(),
+	})
+	if testCreateErr != nil{
+		t.Errorf("Cannot create Data in DB for testing")
+	}
+
 	type fields struct {
 		db DBTX
 	}
+	//trying to create seperate connection for testing
+	conn, connerr := sql.Open(dbDriver, dbConnectionDetails)
+	if connerr != nil {
+		log.Fatalln("Connection Failed, Error--> ", connerr)
+	}
+	func (db DBTX) *fields {
+		return &fields{db: db}
+	}(conn)
+	
+	var dbExec *fields
+	dbExec = func (db DBTX) *fields {
+		return &fields{db: db}
+	}(conn)
 	type args struct {
 		ctx      context.Context
 		clubName string
@@ -79,6 +103,15 @@ func TestQueries_Deletefootballclub(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{
+			name: "TestCase1",
+			fields: *dbExec,
+			args: args{
+				ctx: context.Background(),
+				clubName:testCreateData.ClubName ,
+			},
+			wantErr : false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -93,28 +126,52 @@ func TestQueries_Deletefootballclub(t *testing.T) {
 }
 
 func TestQueries_Getfootballclub(t *testing.T) {
-	type fields struct {
-		db DBTX
+	testCreateData, testCreateErr := testQueries.Createfootballclub(context.Background(), CreatefootballclubParams{
+		ClubName: Util.RandomfootballclubName(),
+		CountryFc: Util.Randomcountryfc(),
+		Balance: Util.Randombalance(),
+	})
+	if testCreateErr != nil{
+		t.Errorf("Cannot create Data in DB for testing")
 	}
+	// type fields struct {
+	// 	db DBTX
+	// }
 	type args struct {
 		ctx  context.Context
 		fcID int32
 	}
 	tests := []struct {
 		name    string
-		fields  fields
+		// fields  fields
 		args    args
 		want    Footballclub
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		
+		{
+			name:"TestCase1",
+			args: args{
+				ctx: context.Background(),
+				fcID: testCreateData.FcID,
+			},
+			want: Footballclub{
+				FcID: testCreateData.FcID,
+				ClubName: testCreateData.ClubName,
+				CountryFc: testCreateData.CountryFc,
+				Balance: testCreateData.Balance,
+				CreatedAt: testCreateData.CreatedAt,
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			q := &Queries{
-				db: tt.fields.db,
-			}
-			got, err := q.Getfootballclub(tt.args.ctx, tt.args.fcID)
+			// q := &Queries{
+			// 	db: tt.fields.db,
+			// }
+			got, err := testQueries.Getfootballclub(tt.args.ctx, tt.args.fcID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Queries.Getfootballclub() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -127,8 +184,22 @@ func TestQueries_Getfootballclub(t *testing.T) {
 }
 
 func TestQueries_Listfootballclub(t *testing.T) {
-	type fields struct {
-		db DBTX
+	// type fields struct {
+	// 	db DBTX
+	// }
+	//we will create test data in footballclub table
+	var listfootballclub []Footballclub
+	for i:=0; i<8; i++{
+		testCreateData, testCreateErr := testQueries.Createfootballclub(context.Background(), CreatefootballclubParams{
+			ClubName: Util.RandomfootballclubName(),
+			CountryFc: Util.Randomcountryfc(),
+			Balance: Util.Randombalance(),
+		})
+		if testCreateErr != nil{
+			t.Errorf("Cannot create Data in DB for testing")
+		}
+		listfootballclub = append(listfootballclub, testCreateData)
+
 	}
 	type args struct {
 		ctx context.Context
@@ -136,19 +207,31 @@ func TestQueries_Listfootballclub(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		fields  fields
+		// fields  fields
 		args    args
 		want    []Footballclub
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{
+			name: "TestCase1",
+			args: args{
+				ctx: context.Background(),
+				arg: ListfootballclubParams{
+					Limit: 8,
+					Offset: 0,
+				},
+			},
+			want: listfootballclub,
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			q := &Queries{
-				db: tt.fields.db,
-			}
-			got, err := q.Listfootballclub(tt.args.ctx, tt.args.arg)
+			// q := &Queries{
+			// 	db: tt.fields.db,
+			// }
+			got, err := testQueries.Listfootballclub(tt.args.ctx, tt.args.arg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Queries.Listfootballclub() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -161,8 +244,16 @@ func TestQueries_Listfootballclub(t *testing.T) {
 }
 
 func TestQueries_UpdatefootballclubBalance(t *testing.T) {
-	type fields struct {
-		db DBTX
+	// type fields struct {
+	// 	db DBTX
+	// }
+	testCreateData, testCreateErr := testQueries.Createfootballclub(context.Background(), CreatefootballclubParams{
+		ClubName: Util.RandomfootballclubName(),
+		CountryFc: Util.Randomcountryfc(),
+		Balance: Util.Randombalance(),
+	})
+	if testCreateErr != nil{
+		t.Errorf("Cannot create Data in DB for testing")
 	}
 	type args struct {
 		ctx context.Context
@@ -170,18 +261,29 @@ func TestQueries_UpdatefootballclubBalance(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		fields  fields
+		// fields  fields
 		args    args
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{
+			name: "TestCase1",
+			args: args{
+				ctx: context.Background(),
+				arg: UpdatefootballclubBalanceParams{
+					FcID: testCreateData.FcID,
+					Balance: Util.Randombalance(),
+				},
+			},
+			wantErr : false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			q := &Queries{
-				db: tt.fields.db,
-			}
-			if err := q.UpdatefootballclubBalance(tt.args.ctx, tt.args.arg); (err != nil) != tt.wantErr {
+			// q := &Queries{
+			// 	db: tt.fields.db,
+			// }
+			if err := testQueries.UpdatefootballclubBalance(tt.args.ctx, tt.args.arg); (err != nil) != tt.wantErr {
 				t.Errorf("Queries.UpdatefootballclubBalance() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
