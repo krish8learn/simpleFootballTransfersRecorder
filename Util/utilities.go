@@ -1,6 +1,5 @@
 package Util
 
-//all utility functions are related to footballclub
 import (
 	"math/rand"
 	"strings"
@@ -35,19 +34,4 @@ func RandomStringGenerator(n int) string {
 	}
 
 	return sb.String()
-}
-
-/*Need --> Generate Random club_name*/
-func RandomfootballclubName() string {
-	return RandomStringGenerator(10)
-}
-
-/*Need --> Generate Random country_fc*/
-func Randomcountryfc() string {
-	return RandomStringGenerator(4)
-}
-
-/* Need --> Generate Random balance */
-func Randombalance() int64 {
-	return RandomIntGenerator(100, 1000000)
 }
