@@ -14,7 +14,8 @@ WHERE fc_id = $1 LIMIT 1;
 
 -- name: Listfootballclub :many
 SELECT * FROM footballclub
-ORDER BY fc_id LIMIT $1 OFFSET $2;
+WHERE fc_id >=  $1
+ORDER BY fc_id OFFSET $2 LIMIT $3;
 
 -- name: UpdatefootballclubBalance :exec
 UPDATE footballclub

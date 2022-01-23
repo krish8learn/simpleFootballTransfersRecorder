@@ -67,16 +67,18 @@ func (q *Queries) Getfootballclub(ctx context.Context, fcID int32) (Footballclub
 
 const listfootballclub = `-- name: Listfootballclub :many
 SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclub
-ORDER BY fc_id LIMIT $1 OFFSET $2
+WHERE fc_id >=  $1
+ORDER BY fc_id OFFSET $2 LIMIT $3
 `
 
 type ListfootballclubParams struct {
-	Limit  int32 `json:"limit"`
+	FcID   int32 `json:"fc_id"`
 	Offset int32 `json:"offset"`
+	Limit  int32 `json:"limit"`
 }
 
 func (q *Queries) Listfootballclub(ctx context.Context, arg ListfootballclubParams) ([]Footballclub, error) {
-	rows, err := q.db.QueryContext(ctx, listfootballclub, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listfootballclub, arg.FcID, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
