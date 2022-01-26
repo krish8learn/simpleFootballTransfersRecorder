@@ -7,44 +7,16 @@ import (
 	"context"
 	//"reflect"
 	"testing"
-	"log"
+
 	"database/sql"
 
 	"github.com/krish8learn/simpleFootballTransfersRecorder/Util"
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestfootballclubdata() Footballclub {
-	testFootballClub, testFootballClubErr := testQueries.Createfootballclub(context.Background(), CreatefootballclubParams{
-		ClubName:  Util.RandomfootballclubName(),
-		CountryFc: Util.Randomcountryfc(),
-		Balance:   Util.Randombalance(),
-	})
 
-	if testFootballClubErr != nil {
-		log.Fatalln("Cannot create footballclub Data in DB for testing", testFootballClubErr)
-	}
-	return testFootballClub
-}
 
-func CreateTestplayerdata() Player{
-	testFootballClub := CreateTestfootballclubdata()
 
-	args:=CreateplayerParams{
-		PlayerName:Util.RandomPlayername(),
-		Position: Util.RandomPosition(),
-		CountryPl: Util.RandomCountryPl(),
-		Value: Util.RandomPlayerValue(),
-		FootballclubID: int64(testFootballClub.FcID),
-	}
-
-	testPlayerData, testErrData := testQueries.Createplayer(context.Background(), args)
-
-	if testErrData != nil{
-		log.Fatalln("Cannot create player Data in DB for testing", testErrData)
-	}
-	return testPlayerData
-}
 
 
 func TestQueries_Createplayer(t *testing.T) {
@@ -56,7 +28,7 @@ func TestQueries_Createplayer(t *testing.T) {
 		Position: Util.RandomPosition(),
 		CountryPl: Util.RandomCountryPl(),
 		Value: Util.RandomPlayerValue(),
-		FootballclubID: int64(testFootballClub.FcID),
+		FootballclubID: testFootballClub.FcID,
 	}
 
 	testPlayerData, testErrData := testQueries.Createplayer(context.Background(), args)
@@ -128,7 +100,10 @@ func TestQueries_GetplayerByPosition(t *testing.T) {
 	require.NoError(t,testErrData)
 
 	for _, individual := range GetplayerByPosition{
-		require.Equal(t, testPlayerData, individual)
+		if individual.PID == testPlayerData.PID{
+			require.Equal(t, testPlayerData, individual)
+		}
+		
 	}
 }
 

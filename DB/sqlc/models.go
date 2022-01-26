@@ -22,7 +22,7 @@ type Player struct {
 	CountryPl  string `json:"country_pl"`
 	// must be positive
 	Value          int64     `json:"value"`
-	FootballclubID int64     `json:"footballclub_id"`
+	FootballclubID int32     `json:"footballclub_id"`
 	CreatedAt      time.Time `json:"created_at"`
 }
 

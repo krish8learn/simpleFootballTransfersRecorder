@@ -25,7 +25,7 @@ type CreateplayerParams struct {
 	Position       string `json:"position"`
 	CountryPl      string `json:"country_pl"`
 	Value          int64  `json:"value"`
-	FootballclubID int64  `json:"footballclub_id"`
+	FootballclubID int32  `json:"footballclub_id"`
 }
 
 func (q *Queries) Createplayer(ctx context.Context, arg CreateplayerParams) (Player, error) {
@@ -100,7 +100,7 @@ SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_
 WHERE footballclub_id = $1
 `
 
-func (q *Queries) GetplayerByFootballclub(ctx context.Context, footballclubID int64) ([]Player, error) {
+func (q *Queries) GetplayerByFootballclub(ctx context.Context, footballclubID int32) ([]Player, error) {
 	rows, err := q.db.QueryContext(ctx, getplayerByFootballclub, footballclubID)
 	if err != nil {
 		return nil, err
@@ -268,7 +268,7 @@ WHERE p_id = $1
 type UpdateplayerParams struct {
 	PID            int32 `json:"p_id"`
 	Value          int64 `json:"value"`
-	FootballclubID int64 `json:"footballclub_id"`
+	FootballclubID int32 `json:"footballclub_id"`
 }
 
 func (q *Queries) Updateplayer(ctx context.Context, arg UpdateplayerParams) error {

@@ -12,7 +12,7 @@ CREATE TABLE "player" (
   "position" varchar NOT NULL,
   "country_pl" varchar NOT NULL,
   "value" bigint NOT NULL,
-  "footballclub_id" bigint NOT NULL,
+  "footballclub_id" int NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
