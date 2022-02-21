@@ -14,6 +14,10 @@ RETURNING *;
 SELECT * FROM player 
 WHERE player_name = $1;
 
+-- name: GetplayerByID :one
+SELECT * FROM player 
+WHERE p_id = $1;
+
 -- name: GetplayerByValueHigherthan :many
 SELECT * FROM player
 WHERE value >= $1;

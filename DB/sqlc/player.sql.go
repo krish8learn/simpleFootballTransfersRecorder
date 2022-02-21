@@ -131,6 +131,26 @@ func (q *Queries) GetplayerByFootballclub(ctx context.Context, footballclubID in
 	return items, nil
 }
 
+const getplayerByID = `-- name: GetplayerByID :one
+SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player 
+WHERE p_id = $1
+`
+
+func (q *Queries) GetplayerByID(ctx context.Context, pID int32) (Player, error) {
+	row := q.db.QueryRowContext(ctx, getplayerByID, pID)
+	var i Player
+	err := row.Scan(
+		&i.PID,
+		&i.PlayerName,
+		&i.Position,
+		&i.CountryPl,
+		&i.Value,
+		&i.FootballclubID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getplayerByName = `-- name: GetplayerByName :one
 SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player 
 WHERE player_name = $1
