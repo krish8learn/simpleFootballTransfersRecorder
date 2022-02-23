@@ -99,6 +99,70 @@ func (q *Queries) GettransferByTransferid(ctx context.Context, tID int32) (Trans
 	return i, err
 }
 
+const gettransferList = `-- name: GettransferList :many
+SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
+ORDER BY fc_id OFFSET $1 LIMIT $2
+`
+
+type GettransferListParams struct {
+	Offset int32 `json:"offset"`
+	Limit  int32 `json:"limit"`
+}
+
+func (q *Queries) GettransferList(ctx context.Context, arg GettransferListParams) ([]Transfer, error) {
+	rows, err := q.db.QueryContext(ctx, gettransferList, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Transfer
+	for rows.Next() {
+		var i Transfer
+		if err := rows.Scan(
+			&i.TID,
+			&i.Season,
+			&i.PlayerID,
+			&i.SourceClub,
+			&i.DestinationClub,
+			&i.Amount,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const highesttransfer = `-- name: Highesttransfer :one
+SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
+WHERE amount = (
+    SELECT MAX(amount)
+    FROM transfer
+)
+`
+
+func (q *Queries) Highesttransfer(ctx context.Context) (Transfer, error) {
+	row := q.db.QueryRowContext(ctx, highesttransfer)
+	var i Transfer
+	err := row.Scan(
+		&i.TID,
+		&i.Season,
+		&i.PlayerID,
+		&i.SourceClub,
+		&i.DestinationClub,
+		&i.Amount,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const updatetransfer = `-- name: Updatetransfer :exec
 UPDATE transfer
 SET amount = $2

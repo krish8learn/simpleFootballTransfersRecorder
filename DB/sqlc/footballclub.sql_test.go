@@ -186,7 +186,7 @@ func TestQueries_Listfootballclub(t *testing.T) {
 	// }
 	//we will create test data in footballclub table
 	var listfootballclub []Footballclub
-	var firstFcId int32
+	
 	for i:=0; i<8; i++{
 		
 		testCreateData, testCreateErr := testQueries.Createfootballclub(context.Background(), CreatefootballclubParams{
@@ -197,9 +197,9 @@ func TestQueries_Listfootballclub(t *testing.T) {
 		if testCreateErr != nil{
 			t.Errorf("Cannot create Data in DB for testing")
 		}
-		if i == 0{
-			firstFcId = testCreateData.FcID
-		}
+		// if i == 0{
+		// 	firstFcId = testCreateData.FcID
+		// }
 		listfootballclub = append(listfootballclub, testCreateData)
 
 	}
@@ -222,7 +222,6 @@ func TestQueries_Listfootballclub(t *testing.T) {
 				arg: ListfootballclubParams{
 					Limit: 8,
 					Offset: 0,
-					FcID: firstFcId,
 				},
 			},
 			want: listfootballclub,

@@ -12,10 +12,13 @@ RETURNING *;
 SELECT * FROM footballclub
 WHERE fc_id = $1 LIMIT 1;
 
+-- name: GetfootballclubByName :one 
+SELECT * FROM footballclub
+WHERE club_name = $1;
+
 -- name: Listfootballclub :many
 SELECT * FROM footballclub
-WHERE fc_id >=  $1
-ORDER BY fc_id OFFSET $2 LIMIT $3;
+ORDER BY fc_id OFFSET $1 LIMIT $2;
 
 -- name: UpdatefootballclubBalance :exec
 UPDATE footballclub

@@ -18,6 +18,10 @@ WHERE player_name = $1;
 SELECT * FROM player 
 WHERE p_id = $1;
 
+-- name: GetPlayersList :many
+SELECT * FROM player
+ORDER BY fc_id OFFSET $1 LIMIT $2;
+
 -- name: GetplayerByValueHigherthan :many
 SELECT * FROM player
 WHERE value >= $1;

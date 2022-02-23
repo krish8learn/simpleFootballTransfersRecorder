@@ -65,20 +65,36 @@ func (q *Queries) Getfootballclub(ctx context.Context, fcID int32) (Footballclub
 	return i, err
 }
 
+const getfootballclubByName = `-- name: GetfootballclubByName :one
+SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclub
+WHERE club_name = $1
+`
+
+func (q *Queries) GetfootballclubByName(ctx context.Context, clubName string) (Footballclub, error) {
+	row := q.db.QueryRowContext(ctx, getfootballclubByName, clubName)
+	var i Footballclub
+	err := row.Scan(
+		&i.FcID,
+		&i.ClubName,
+		&i.CountryFc,
+		&i.Balance,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const listfootballclub = `-- name: Listfootballclub :many
 SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclub
-WHERE fc_id >=  $1
-ORDER BY fc_id OFFSET $2 LIMIT $3
+ORDER BY fc_id OFFSET $1 LIMIT $2
 `
 
 type ListfootballclubParams struct {
-	FcID   int32 `json:"fc_id"`
 	Offset int32 `json:"offset"`
 	Limit  int32 `json:"limit"`
 }
 
 func (q *Queries) Listfootballclub(ctx context.Context, arg ListfootballclubParams) ([]Footballclub, error) {
-	rows, err := q.db.QueryContext(ctx, listfootballclub, arg.FcID, arg.Offset, arg.Limit)
+	rows, err := q.db.QueryContext(ctx, listfootballclub, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}

@@ -59,6 +59,47 @@ func (q *Queries) Deleteplayer(ctx context.Context, playerName string) error {
 	return err
 }
 
+const getPlayersList = `-- name: GetPlayersList :many
+SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player
+ORDER BY fc_id OFFSET $1 LIMIT $2
+`
+
+type GetPlayersListParams struct {
+	Offset int32 `json:"offset"`
+	Limit  int32 `json:"limit"`
+}
+
+func (q *Queries) GetPlayersList(ctx context.Context, arg GetPlayersListParams) ([]Player, error) {
+	rows, err := q.db.QueryContext(ctx, getPlayersList, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Player
+	for rows.Next() {
+		var i Player
+		if err := rows.Scan(
+			&i.PID,
+			&i.PlayerName,
+			&i.Position,
+			&i.CountryPl,
+			&i.Value,
+			&i.FootballclubID,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getplayerByCountry = `-- name: GetplayerByCountry :many
 SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player
 WHERE country_pl = $1
