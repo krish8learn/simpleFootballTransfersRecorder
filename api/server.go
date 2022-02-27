@@ -21,8 +21,8 @@ func NewServer(transaction *DB.Transaction) *Server {
 
 	router.GET("/home", server.homePage)
 
-	router.POST("/player/entryPlayer", server.createPlayer)
-	router.GET("/player/listPlayers")
+	router.POST("/player/createPlayer", server.createPlayer)
+	router.GET("/player/listPlayers", server.listPlayers)
 	router.GET("/player/lessthanlistPlayers/:value")
 	router.GET("/player/higherthanlistPlayers/:value")
 	router.GET("/player/namePlayer")
@@ -32,15 +32,15 @@ func NewServer(transaction *DB.Transaction) *Server {
 	router.PUT("/player/updatevaluePlayer")
 	router.DELETE("/player/removePlayer")
 
-	router.POST("/footballclub/entryFootballclub", server.createFootballclub)
+	router.POST("/footballclub/createFootballclub", server.createFootballclub)
 	router.GET("/footballclub/listFootballclubs", server.listFootballclubs)
-	router.GET("/footballclub/nameFootballclub")
-	router.GET("/footballclub/countryFootballclubs")
-	router.GET("/footballclub/playernameFootballclub")
-	router.PUT("/footballclub/updateBalanceFootballclub")
-	router.DELETE("/footballclub/removeFootballclub")
+	router.GET("/footballclub/nameFootballclub/:name",server.nameFootballclub)
+	router.GET("/footballclub/countryFootballclubs/:country",server.countryFootballclubs)
+	router.GET("/footballclub/playernameFootballclub/:player", server.playerNameFootballclub)
+	router.PUT("/footballclub/updateBalanceFootballclub", server.updateBalanceFootballclub)
+	router.DELETE("/footballclub/removeFootballclub/:name", server.removeFootballclub)
 
-	router.POST("/transfer/entryTransfer")
+	router.POST("/transfer/createTransfer")
 	router.GET("/transfer/listTransfers")
 	router.GET("/transfer/playerNameTransfer")
 	router.GET("/transfer/maxTransfer")

@@ -42,6 +42,10 @@ WHERE country_pl = $1;
 SELECT * FROM player
 WHERE position = $1; 
 
+-- name: DeletePlayerByClubID :exec
+DELETE FROM player
+WHERE footballclub_id = $1;
+
 -- name: Deleteplayer :exec
 DELETE FROM player
 WHERE player_name = $1;

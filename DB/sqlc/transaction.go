@@ -100,7 +100,7 @@ func (t Transaction) TransferTx(ctx context.Context, arg TransferTxParams) (Tran
 		}
 
 		//getting data of source club
-		getSourceClubData, err := q.Getfootballclub(ctx, arg.SourceClubID)
+		getSourceClubData, err := q.GetfootballclubByID(ctx, arg.SourceClubID)
 
 		if err != nil {
 			return nil
@@ -113,7 +113,7 @@ func (t Transaction) TransferTx(ctx context.Context, arg TransferTxParams) (Tran
 		})
 
 		//getting data of destination club
-		getDestinationClubData, err := q.Getfootballclub(ctx, arg.DestinationClubID)
+		getDestinationClubData, err := q.GetfootballclubByID(ctx, arg.DestinationClubID)
 
 		if err != nil {
 			return nil
@@ -128,9 +128,9 @@ func (t Transaction) TransferTx(ctx context.Context, arg TransferTxParams) (Tran
 		//get player data inside the result
 		result.Player, _ = q.GetplayerByID(ctx, arg.PlayerID)
 		//get sourceClub in result
-		result.SourceClub, _ = q.Getfootballclub(ctx, arg.SourceClubID)
+		result.SourceClub, _ = q.GetfootballclubByID(ctx, arg.SourceClubID)
 		//get destinationClub into result
-		result.DestinationClub, _ = q.Getfootballclub(ctx, arg.DestinationClubID)
+		result.DestinationClub, _ = q.GetfootballclubByID(ctx, arg.DestinationClubID)
 
 		return nil
 	})

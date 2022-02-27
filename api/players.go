@@ -29,8 +29,9 @@ func (server *Server) createPlayer(ctx *gin.Context) {
 	//getting footballclub_id based on name
 	footballclubFromreq, DBError := server.transaction.GetfootballclubByName(ctx, playerCreate.ClubName)
 	if DBError != nil {
-		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
-		fmt.Println("football ", DBError)
+		//footballclub not found, cannot create data for the player, error --> ("sql: no rows in result set")
+		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		// fmt.Println("football ", DBError)
 		return
 	}
 
@@ -46,9 +47,38 @@ func (server *Server) createPlayer(ctx *gin.Context) {
 	playerInserted, DBError := server.transaction.Createplayer(ctx, arg)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
-		fmt.Println("player ", DBError)
+		// fmt.Println("player ", DBError)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, playerInserted)
+}
+
+type listPlayers struct {
+	PageID   int32 `form:"page_id" binding:"required,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+}
+
+func (server *Server) listPlayers(ctx *gin.Context) {
+	var playerList listPlayers
+
+	if bindErr := ctx.ShouldBindQuery(&playerList); bindErr != nil {
+		ctx.JSON(http.StatusBadRequest, Util.ErrorHTTPResponse(bindErr))
+		// fmt.Println("bind ", bindErr)
+		return
+	}
+
+	arg := DB.GetPlayersListParams{
+		Offset: (playerList.PageID - 1) * playerList.PageSize,
+		Limit:  int32(playerList.PageSize),
+	}
+
+	dbPlayerList, DBError := server.transaction.GetPlayersList(ctx, arg)
+	if DBError != nil {
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		// fmt.Println("player ", DBError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dbPlayerList)
 }

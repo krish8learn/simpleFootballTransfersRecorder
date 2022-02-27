@@ -49,6 +49,16 @@ func (q *Queries) Createplayer(ctx context.Context, arg CreateplayerParams) (Pla
 	return i, err
 }
 
+const deletePlayerByClubID = `-- name: DeletePlayerByClubID :exec
+DELETE FROM player
+WHERE footballclub_id = $1
+`
+
+func (q *Queries) DeletePlayerByClubID(ctx context.Context, footballclubID int32) error {
+	_, err := q.db.ExecContext(ctx, deletePlayerByClubID, footballclubID)
+	return err
+}
+
 const deleteplayer = `-- name: Deleteplayer :exec
 DELETE FROM player
 WHERE player_name = $1

@@ -47,13 +47,47 @@ func (q *Queries) Deletefootballclub(ctx context.Context, clubName string) error
 	return err
 }
 
-const getfootballclub = `-- name: Getfootballclub :one
+const getfootballclubByCountry = `-- name: GetfootballclubByCountry :many
+SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclub
+WHERE country_fc = $1
+`
+
+func (q *Queries) GetfootballclubByCountry(ctx context.Context, countryFc string) ([]Footballclub, error) {
+	rows, err := q.db.QueryContext(ctx, getfootballclubByCountry, countryFc)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Footballclub
+	for rows.Next() {
+		var i Footballclub
+		if err := rows.Scan(
+			&i.FcID,
+			&i.ClubName,
+			&i.CountryFc,
+			&i.Balance,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getfootballclubByID = `-- name: GetfootballclubByID :one
 SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclub
 WHERE fc_id = $1 LIMIT 1
 `
 
-func (q *Queries) Getfootballclub(ctx context.Context, fcID int32) (Footballclub, error) {
-	row := q.db.QueryRowContext(ctx, getfootballclub, fcID)
+func (q *Queries) GetfootballclubByID(ctx context.Context, fcID int32) (Footballclub, error) {
+	row := q.db.QueryRowContext(ctx, getfootballclubByID, fcID)
 	var i Footballclub
 	err := row.Scan(
 		&i.FcID,

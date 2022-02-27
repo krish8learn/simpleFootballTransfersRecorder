@@ -80,7 +80,11 @@ func TestQueries_Deletefootballclub(t *testing.T) {
 		db DBTX
 	}
 	//trying to create seperate connection for testing
-	conn, connerr := sql.Open(dbDriver, dbConnectionDetails)
+	config, err := Util.LoadConfig(".")
+	if err != nil {
+		log.Fatalln("Env variables issue:", err)
+	}
+	conn, connerr := sql.Open(config.DBDriver, config.DBSource)
 	if connerr != nil {
 		log.Fatalln("Connection Failed, Error--> ", connerr)
 	}
@@ -168,7 +172,7 @@ func TestQueries_Getfootballclub(t *testing.T) {
 			// q := &Queries{
 			// 	db: tt.fields.db,
 			// }
-			got, err := testQueries.Getfootballclub(tt.args.ctx, tt.args.fcID)
+			got, err := testQueries.GetfootballclubByID(tt.args.ctx, tt.args.fcID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Queries.Getfootballclub() error = %v, wantErr %v", err, tt.wantErr)
 				return
