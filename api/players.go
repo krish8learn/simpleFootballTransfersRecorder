@@ -189,13 +189,23 @@ func (server *Server) updatePlayer(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, "Player Updated")
 }
 
-func (server *Server) removePlayer(ctx *gin.Context){
+func (server *Server) removePlayer(ctx *gin.Context) {
 	playerName := ctx.Param("name")
 
-	DBError := server.transaction.Deleteplayer(ctx, playerName)
+	//check whether the player exists or not
+	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
 	if DBError != nil {
 		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
 		// fmt.Println("player ", DBError)
 		return
 	}
+
+	DBError = server.transaction.Deleteplayer(ctx, dbPlayer.PlayerName)
+	if DBError != nil {
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		// fmt.Println("player ", DBError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, "Deletion Successfull")
 }
