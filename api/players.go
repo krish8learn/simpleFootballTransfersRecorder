@@ -9,6 +9,11 @@ import (
 	"github.com/krish8learn/simpleFootballTransfersRecorder/Util"
 )
 
+type playerlistReturns struct {
+	List  []DB.Player
+	Total int64 `json:"total"`
+}
+
 type createPlayer struct {
 	PlayerName string `json:"player_name" binding:"required"`
 	Position   string `json:"position" binding:"required"`
@@ -81,4 +86,116 @@ func (server *Server) listPlayers(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, dbPlayerList)
+}
+
+func (server *Server) namePlayer(ctx *gin.Context) {
+	playerName := ctx.Param("name")
+
+	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
+	if DBError != nil {
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, dbPlayer)
+}
+
+func (server *Server) positionPlayer(ctx *gin.Context) {
+	position := ctx.Param("position")
+
+	dbPlayers, DBError := server.transaction.GetplayerByPosition(ctx, position)
+	if DBError != nil {
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, playerlistReturns{dbPlayers, int64(len(dbPlayers))})
+}
+
+func (server *Server) countryPlayer(ctx *gin.Context) {
+	country := ctx.Param("country")
+
+	dbPlayers, DBError := server.transaction.GetplayerByCountry(ctx, country)
+	if DBError != nil {
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, playerlistReturns{dbPlayers, int64(len(dbPlayers))})
+}
+
+func (server *Server) footballclubPlayers(ctx *gin.Context) {
+	club := ctx.Param("club")
+
+	//get football club id
+	dbFootballclub, DBError := server.transaction.GetfootballclubByName(ctx, club)
+	if DBError != nil {
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		return
+	}
+
+	dbPlayers, DBError := server.transaction.GetplayerByFootballclub(ctx, dbFootballclub.FcID)
+	if DBError != nil {
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, playerlistReturns{dbPlayers, int64(len(dbPlayers))})
+}
+
+type updateValuePlayer struct {
+	Player_name       string `json:"player_name" binding:"required"`
+	Value             int64  `json:"value" binding:"required"`
+	Footballclub_name string `json:"footballclub_name" binding:"required"`
+}
+
+func (server *Server) updatePlayer(ctx *gin.Context) {
+	var playerValueUpdate updateValuePlayer
+
+	//checking input from the user
+	if bindErr := ctx.ShouldBindJSON(&playerValueUpdate); bindErr != nil {
+		ctx.JSON(http.StatusBadRequest, Util.ErrorHTTPResponse(bindErr))
+		// fmt.Println("bind ", bindErr)
+		return
+	}
+
+	existPlayer, DBError := server.transaction.GetplayerByName(ctx, playerValueUpdate.Player_name)
+	if DBError != nil {
+		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		// fmt.Println("player ", DBError)
+		return
+	}
+	//find new transfer club by name
+	existFootballClub, DBError := server.transaction.GetfootballclubByName(ctx, playerValueUpdate.Footballclub_name)
+	if DBError != nil {
+		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		// fmt.Println("player ", DBError)
+		return
+	}
+
+	arg := DB.UpdateplayerParams{
+		PID:            existPlayer.PID,
+		Value:          playerValueUpdate.Value,
+		FootballclubID: existFootballClub.FcID,
+	}
+
+	DBError = server.transaction.Updateplayer(ctx, arg)
+	if DBError != nil {
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		// fmt.Println("player ", DBError)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, "Player Updated")
+}
+
+func (server *Server) removePlayer(ctx *gin.Context){
+	playerName := ctx.Param("name")
+
+	DBError := server.transaction.Deleteplayer(ctx, playerName)
+	if DBError != nil {
+		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		// fmt.Println("player ", DBError)
+		return
+	}
 }

@@ -71,7 +71,7 @@ func (q *Queries) Deleteplayer(ctx context.Context, playerName string) error {
 
 const getPlayersList = `-- name: GetPlayersList :many
 SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player
-ORDER BY fc_id OFFSET $1 LIMIT $2
+ORDER BY p_id OFFSET $1 LIMIT $2
 `
 
 type GetPlayersListParams struct {

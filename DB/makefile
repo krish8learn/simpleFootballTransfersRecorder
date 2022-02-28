@@ -22,4 +22,8 @@ sqlccompile:
 test:
 	go test -v cover ./...
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlcgen sqlccompile test
+gomod:
+	go mod tidy -compat=1.17	
+
+
+.PHONY: postgres createdb dropdb migrateup migratedown sqlcgen sqlccompile test gomod

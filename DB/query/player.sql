@@ -20,7 +20,7 @@ WHERE p_id = $1;
 
 -- name: GetPlayersList :many
 SELECT * FROM player
-ORDER BY fc_id OFFSET $1 LIMIT $2;
+ORDER BY p_id OFFSET $1 LIMIT $2;
 
 -- name: GetplayerByValueHigherthan :many
 SELECT * FROM player
