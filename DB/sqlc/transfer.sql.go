@@ -59,13 +59,15 @@ func (q *Queries) Deletetransfer(ctx context.Context, tID int32) error {
 	return err
 }
 
-const gettransferByPlayerid = `-- name: GettransferByPlayerid :one
+const getLasttransferByPlayerid = `-- name: GetLasttransferByPlayerid :one
 SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
-WHERE player_id = $1 LIMIT 1
+WHERE player_id = $1
+ORDER BY created_at DESC 
+LIMIT 1
 `
 
-func (q *Queries) GettransferByPlayerid(ctx context.Context, playerID int32) (Transfer, error) {
-	row := q.db.QueryRowContext(ctx, gettransferByPlayerid, playerID)
+func (q *Queries) GetLasttransferByPlayerid(ctx context.Context, playerID int32) (Transfer, error) {
+	row := q.db.QueryRowContext(ctx, getLasttransferByPlayerid, playerID)
 	var i Transfer
 	err := row.Scan(
 		&i.TID,
@@ -77,6 +79,42 @@ func (q *Queries) GettransferByPlayerid(ctx context.Context, playerID int32) (Tr
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const gettransferByPlayerid = `-- name: GettransferByPlayerid :many
+SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
+WHERE player_id = $1
+`
+
+func (q *Queries) GettransferByPlayerid(ctx context.Context, playerID int32) ([]Transfer, error) {
+	rows, err := q.db.QueryContext(ctx, gettransferByPlayerid, playerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Transfer
+	for rows.Next() {
+		var i Transfer
+		if err := rows.Scan(
+			&i.TID,
+			&i.Season,
+			&i.PlayerID,
+			&i.SourceClub,
+			&i.DestinationClub,
+			&i.Amount,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const gettransferByTransferid = `-- name: GettransferByTransferid :one
@@ -101,7 +139,7 @@ func (q *Queries) GettransferByTransferid(ctx context.Context, tID int32) (Trans
 
 const gettransferList = `-- name: GettransferList :many
 SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
-ORDER BY fc_id OFFSET $1 LIMIT $2
+ORDER BY t_id OFFSET $1 LIMIT $2
 `
 
 type GettransferListParams struct {
@@ -150,6 +188,33 @@ WHERE amount = (
 
 func (q *Queries) Highesttransfer(ctx context.Context) (Transfer, error) {
 	row := q.db.QueryRowContext(ctx, highesttransfer)
+	var i Transfer
+	err := row.Scan(
+		&i.TID,
+		&i.Season,
+		&i.PlayerID,
+		&i.SourceClub,
+		&i.DestinationClub,
+		&i.Amount,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const latesttransfer = `-- name: Latesttransfer :one
+SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
+WHERE player_id = $1 AND destination_club = $2
+ORDER BY created_at DESC 
+LIMIT 1
+`
+
+type LatesttransferParams struct {
+	PlayerID        int32 `json:"player_id"`
+	DestinationClub int32 `json:"destination_club"`
+}
+
+func (q *Queries) Latesttransfer(ctx context.Context, arg LatesttransferParams) (Transfer, error) {
+	row := q.db.QueryRowContext(ctx, latesttransfer, arg.PlayerID, arg.DestinationClub)
 	var i Transfer
 	err := row.Scan(
 		&i.TID,

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +26,7 @@ func (server *Server) createPlayer(ctx *gin.Context) {
 	// var DBError error
 	if bindErr := ctx.ShouldBindJSON(&playerCreate); bindErr != nil {
 		ctx.JSON(http.StatusBadRequest, Util.ErrorHTTPResponse(bindErr))
-		fmt.Println("bind ", bindErr)
+		// fmt.Println("bind ", bindErr)
 		return
 	}
 

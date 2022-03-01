@@ -54,8 +54,8 @@ func (transaction *Transaction) execTx(ctx context.Context, fn func(*Queries) er
 type TransferTxParams struct {
 	Season            int64 `json:"season"`
 	PlayerID          int32 `json:"player_id"`
-	SourceClubID      int32 `json:"source_club"`
-	DestinationClubID int32 `json:"destination_club"`
+	SourceClubID      int32 `json:"source_club_id"`
+	DestinationClubID int32 `json:"destination_club_id"`
 	Amount            int64 `json:"amount"`
 }
 
