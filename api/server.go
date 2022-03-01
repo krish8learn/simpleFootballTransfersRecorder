@@ -45,7 +45,7 @@ func NewServer(transaction *DB.Transaction) *Server {
 	router.GET("/transfer/playerNameTransfer/:name", server.playerNameTransfer)
 	router.GET("/transfer/maxTransfer", server.maxTransfer)
 	router.PUT("/transfer/amountTransfer", server.amountTransfer)
-	router.DELETE("/transfer/removeTransfer/:name")
+	router.DELETE("/transfer/removeTransfer/:name", server.removeTransfer)
 
 	return server
 }
