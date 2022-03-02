@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,7 +36,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 	playerDB, DBError := server.transaction.GetplayerByName(ctx, transferCreate.PlayerName)
 	if DBError != nil {
 		// error present , player does not exist in table
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(transferCreate.PlayerName+" no data found"))
 		return
 	}
 
@@ -43,7 +44,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 	sourceFootballClubDB, DBError := server.transaction.GetfootballclubByName(context.Background(), transferCreate.SourceClubName)
 	if DBError != nil {
 		// error present , club does not exist in table
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(transferCreate.SourceClubName+" no data found"))
 		return
 	}
 
@@ -57,7 +58,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 	destinationFootballclub, DBError := server.transaction.GetfootballclubByName(ctx, transferCreate.DestinationClubName)
 	if DBError != nil {
 		// error present , club does not exist in table
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(transferCreate.DestinationClubName+" no data found"))
 		return
 	}
 
@@ -84,16 +85,33 @@ func (server *Server) playerNameTransfer(ctx *gin.Context) {
 	//check player availability
 	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
 	if DBError != nil {
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerName+" no data found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		// fmt.Println("player ", DBError)
 		return
 	}
 
 	//get transfer
 	dbTransfer, DBError := server.transaction.GettransferByPlayerid(ctx, dbPlayer.PID)
 	if DBError != nil {
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerName+" no footballclub data found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		// fmt.Println("player ", DBError)
 		return
 	}
+
 	ctx.JSON(http.StatusOK, dbTransfer)
 }
 
@@ -122,6 +140,13 @@ func (server *Server) listTransfers(ctx *gin.Context) {
 
 	dbTransferList, DBError := server.transaction.GettransferList(ctx, arg)
 	if DBError != nil {
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse("no data found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
 		return
@@ -167,8 +192,15 @@ func (server *Server) amountTransfer(ctx *gin.Context) {
 	//get the player_id
 	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, transferInput.PlayerName)
 	if DBError != nil {
-		//player does not exist in table
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(transferInput.PlayerName+" no data found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		// fmt.Println("player ", DBError)
 		return
 	}
 
@@ -179,6 +211,13 @@ func (server *Server) amountTransfer(ctx *gin.Context) {
 	}
 	dbTransfer, DBError := server.transaction.Latesttransfer(ctx, arg)
 	if DBError != nil {
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(transferInput.PlayerName+" no transferdata found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
 		return
@@ -205,16 +244,30 @@ func (server *Server) removeTransfer(ctx *gin.Context) {
 	//check the player in table
 	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
 	if DBError != nil {
-		//player does not exist in table
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerName+" no data found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		// fmt.Println("player ", DBError)
 		return
 	}
 
 	//get the latest transfer
 	dbTransfer, DBError := server.transaction.GetLasttransferByPlayerid(ctx, dbPlayer.PID)
 	if DBError != nil {
-		//player does not exist in table
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerName+" no transfer data found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		// fmt.Println("player ", DBError)
 		return
 	}
 

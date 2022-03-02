@@ -24,10 +24,10 @@ func ConflictError() error {
 	}
 }
 
-func DataNotFound() error {
+func DataNotFound(input string) error {
 	return &CustomError{
 		ErrorCode:    404,
-		ErrorMessage: errors.New("data not found"),
+		ErrorMessage: errors.New(input),
 	}
 }
 
@@ -39,6 +39,6 @@ func ErrorHTTPCustomConflictResponse() gin.H {
 	return gin.H{"error": ConflictError().Error()}
 }
 
-func ErrorHTTPCustomNotFoundResponse() gin.H {
-	return gin.H{"error": DataNotFound().Error()}
+func ErrorHTTPCustomNotFoundResponse(input string) gin.H {
+	return gin.H{"error": DataNotFound(input).Error()}
 }

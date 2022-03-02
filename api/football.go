@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -81,6 +82,13 @@ func (server *Server) listFootballclubs(ctx *gin.Context) {
 
 	dbfootballclubList, DBError := server.transaction.Listfootballclub(ctx, arg)
 	if DBError != nil {
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse("No data found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
 		return
@@ -102,7 +110,14 @@ func (server *Server) nameFootballclub(ctx *gin.Context) {
 
 	dbfootballclub, DBError := server.transaction.GetfootballclubByName(ctx, name)
 	if DBError != nil {
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPResponse(DBError))
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(name+" no data found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
 		return
 	}
@@ -116,6 +131,13 @@ func (server *Server) countryFootballclubs(ctx *gin.Context) {
 
 	dbfootballclub, DBError := server.transaction.GetfootballclubByCountry(ctx, countryName)
 	if DBError != nil {
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(countryName+" no data found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
 		return
@@ -136,13 +158,27 @@ func (server *Server) playerNameFootballclub(ctx *gin.Context) {
 	//check whether the player in the DB
 	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
 	if DBError != nil {
-		//player data not present, so error ("sql: no rows in result set")
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerName+" no data found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
+		// fmt.Println("player ", DBError)
 		return
 	}
 
 	dbfootballclub, DBError := server.transaction.GetfootballclubByID(ctx, dbPlayer.FootballclubID)
 	if DBError != nil {
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerName+" footballclub data not found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
 		return
@@ -169,7 +205,14 @@ func (server *Server) updateBalanceFootballclub(ctx *gin.Context) {
 	//check whether club already exist or not
 	existFootballClub, DBError := server.transaction.GetfootballclubByName(ctx, footballclubUpdate.ClubName)
 	if DBError != nil {
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		//error present, check type of error
+		if DBError == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(footballclubUpdate.ClubName+" data not found"))
+			// fmt.Println("player ", DBError)
+			return
+		}
+		//error is different
+		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
 		return
 	}
@@ -195,7 +238,7 @@ func (server *Server) removeFootballclub(ctx *gin.Context) {
 
 	dbfootballclub, DBError := server.transaction.GetfootballclubByName(ctx, name)
 	if DBError != nil {
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse())
+		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(name+" no data found"))
 		return
 	}
 
