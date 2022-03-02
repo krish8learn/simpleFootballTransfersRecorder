@@ -86,3 +86,20 @@ func CreateTestTransferdata() Transfer {
 
 	return testTransfer
 }
+
+func CreateTestUser() User {
+	arg := CreateusersParams{
+		Username:       Util.Randomusername(),
+		HashedPassword: "",
+		FullName:       Util.Randomfullname(),
+		Email:          Util.Randomemail(),
+	}
+
+	user, testErr := testQueries.Createusers(context.Background(), arg)
+
+	if testErr != nil {
+		log.Fatalln("Cannot create user Data in DB for testing")
+	}
+
+	return user
+}
