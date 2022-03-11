@@ -47,6 +47,8 @@ func NewServer(transaction *DB.Transaction) *Server {
 	router.PUT("/transfer/amountTransfer", server.amountTransfer)
 	router.DELETE("/transfer/removeTransfer/:name", server.removeTransfer)
 
+	router.POST("/user/createUser", server.Createusers)
+
 	return server
 }
 

@@ -9,12 +9,15 @@ import (
 	"testing"
 
 	"github.com/krish8learn/simpleFootballTransfersRecorder/Util"
+	"github.com/stretchr/testify/require"
 )
 
 func TestQueries_Createusers(t *testing.T) {
 	// type fields struct {
 	// 	db DBTX
 	// }
+	hashedPassword, err := Util.HashPassword(Util.RandomStringGenerator(6))
+	require.NoError(t, err)
 	type args struct {
 		ctx context.Context
 		arg CreateusersParams
@@ -23,7 +26,7 @@ func TestQueries_Createusers(t *testing.T) {
 		ctx: context.Background(),
 		arg: CreateusersParams{
 			Username:Util.Randomusername(),
-			HashedPassword: "",
+			HashedPassword: hashedPassword,
 			FullName: Util.Randomfullname(),
 			Email: Util.Randomemail(),
 		},
