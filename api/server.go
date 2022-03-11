@@ -1,22 +1,36 @@
 package api
 
 import (
+	"log"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	DB "github.com/krish8learn/simpleFootballTransfersRecorder/DB/sqlc"
+	"github.com/krish8learn/simpleFootballTransfersRecorder/token"
 )
 
 //server for HTTP request
 type Server struct {
 	transaction *DB.Transaction
+	tokenMaker  token.Maker
 	router      *gin.Engine
+	accessTime  time.Duration
 }
 
 //NewServer creates a new HTTP server and set up routing
-func NewServer(transaction *DB.Transaction) *Server {
+func NewServer(transaction *DB.Transaction, secureKay string, accessTime time.Duration) *Server {
 	router := gin.Default()
+	// tokenMaker, err := token.NewJWTMaker(secureKay)
+	tokenMaker, err := token.NewPasetoMaker(secureKay)
+	if err != nil {
+		log.Fatalln("unable to create token maker", err)
+	}
+
 	server := &Server{
 		transaction: transaction,
+		tokenMaker:  tokenMaker,
 		router:      router,
+		accessTime:  accessTime,
 	}
 
 	router.GET("/home", server.homePage)
@@ -48,6 +62,7 @@ func NewServer(transaction *DB.Transaction) *Server {
 	router.DELETE("/transfer/removeTransfer/:name", server.removeTransfer)
 
 	router.POST("/user/createUser", server.Createusers)
+	router.POST("/user/login", server.Loginuser)
 
 	return server
 }

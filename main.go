@@ -29,7 +29,9 @@ func main() {
 	}
 
 	transaction := DB.NewTransaction(DbConnect)
-	server := api.NewServer(transaction)
+	// fmt.Println(Util.RandomStringGenerator(32))
+	// fmt.Println(len(config.SecurityKey))
+	server := api.NewServer(transaction, config.SecurityKey, config.AccessTime)
 
 	serverErr := server.Start(config.Port)
 

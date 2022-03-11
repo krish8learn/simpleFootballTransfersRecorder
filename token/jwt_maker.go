@@ -12,7 +12,8 @@ const minSizeSecretKey = 32
 
 //JSON web token maker
 type JWTMaker struct {
-	secretKey string
+	secretKey  string
+	accessTime time.Duration
 }
 
 func NewJWTMaker(secretKey string) (Maker, error) {
@@ -44,7 +45,7 @@ func (maker *JWTMaker) VerifyToken(token string) (*Payload, error) {
 		}
 		return []byte(maker.secretKey), nil
 	})
-	
+
 	if err != nil {
 		//invalid token can be two type, expired or invalid
 		verr, ok := err.(*jwt.ValidationError)
