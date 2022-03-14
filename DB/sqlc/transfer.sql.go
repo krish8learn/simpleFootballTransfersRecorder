@@ -8,7 +8,7 @@ import (
 )
 
 const createtransfer = `-- name: Createtransfer :one
-INSERT INTO transfer(
+INSERT INTO transfers(
    season,
    player_id,
    source_club,
@@ -50,7 +50,7 @@ func (q *Queries) Createtransfer(ctx context.Context, arg CreatetransferParams) 
 }
 
 const deletetransfer = `-- name: Deletetransfer :exec
-DELETE FROM transfer
+DELETE FROM transfers
 WHERE t_id = $1
 `
 
@@ -60,7 +60,7 @@ func (q *Queries) Deletetransfer(ctx context.Context, tID int32) error {
 }
 
 const getLasttransferByPlayerid = `-- name: GetLasttransferByPlayerid :one
-SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
+SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfers
 WHERE player_id = $1
 ORDER BY created_at DESC 
 LIMIT 1
@@ -82,7 +82,7 @@ func (q *Queries) GetLasttransferByPlayerid(ctx context.Context, playerID int32)
 }
 
 const gettransferByPlayerid = `-- name: GettransferByPlayerid :many
-SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
+SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfers
 WHERE player_id = $1
 `
 
@@ -118,7 +118,7 @@ func (q *Queries) GettransferByPlayerid(ctx context.Context, playerID int32) ([]
 }
 
 const gettransferByTransferid = `-- name: GettransferByTransferid :one
-SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
+SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfers
 WHERE t_id = $1 LIMIT 1
 `
 
@@ -138,7 +138,7 @@ func (q *Queries) GettransferByTransferid(ctx context.Context, tID int32) (Trans
 }
 
 const gettransferList = `-- name: GettransferList :many
-SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
+SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfers
 ORDER BY t_id OFFSET $1 LIMIT $2
 `
 
@@ -179,10 +179,10 @@ func (q *Queries) GettransferList(ctx context.Context, arg GettransferListParams
 }
 
 const highesttransfer = `-- name: Highesttransfer :one
-SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
+SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfers
 WHERE amount = (
     SELECT MAX(amount)
-    FROM transfer
+    FROM transfers
 )
 `
 
@@ -202,7 +202,7 @@ func (q *Queries) Highesttransfer(ctx context.Context) (Transfer, error) {
 }
 
 const latesttransfer = `-- name: Latesttransfer :one
-SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfer
+SELECT t_id, season, player_id, source_club, destination_club, amount, created_at FROM transfers
 WHERE player_id = $1 AND destination_club = $2
 ORDER BY created_at DESC 
 LIMIT 1
@@ -229,7 +229,7 @@ func (q *Queries) Latesttransfer(ctx context.Context, arg LatesttransferParams) 
 }
 
 const updatetransfer = `-- name: Updatetransfer :exec
-UPDATE transfer
+UPDATE transfers
 SET amount = $2
 WHERE t_id = $1
 `

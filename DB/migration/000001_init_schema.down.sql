@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS transfer;
-DROP TABLE IF EXISTS player;
-DROP TABLE IF EXISTS footballclub;
+DROP TABLE IF EXISTS transfers;
+DROP TABLE IF EXISTS players;
+DROP TABLE IF EXISTS footballclubs;
 
 
 

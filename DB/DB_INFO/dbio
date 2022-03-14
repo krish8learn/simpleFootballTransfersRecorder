@@ -1,5 +1,5 @@
 
-Table footballclub as FC {
+Table footballclubs as FC {
   fc_id int [pk, increment] // auto-increment
   club_name varchar [not null]
   country_fc varchar [not null]
@@ -12,7 +12,7 @@ Table footballclub as FC {
 }
 
 
-Table player as P {
+Table players as P {
   p_id int [pk, increment] // auto-increment
   player_name varchar [not null, unique]
   position varchar [not null]

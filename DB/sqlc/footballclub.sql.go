@@ -8,7 +8,7 @@ import (
 )
 
 const createfootballclub = `-- name: Createfootballclub :one
-INSERT INTO footballclub (
+INSERT INTO footballclubs (
   club_name,
   country_fc,
   balance
@@ -38,7 +38,7 @@ func (q *Queries) Createfootballclub(ctx context.Context, arg Createfootballclub
 }
 
 const deletefootballclub = `-- name: Deletefootballclub :exec
-DELETE FROM footballclub
+DELETE FROM footballclubs
 WHERE club_name = $1
 `
 
@@ -48,7 +48,7 @@ func (q *Queries) Deletefootballclub(ctx context.Context, clubName string) error
 }
 
 const getfootballclubByCountry = `-- name: GetfootballclubByCountry :many
-SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclub
+SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclubs
 WHERE country_fc = $1
 `
 
@@ -82,7 +82,7 @@ func (q *Queries) GetfootballclubByCountry(ctx context.Context, countryFc string
 }
 
 const getfootballclubByID = `-- name: GetfootballclubByID :one
-SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclub
+SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclubs
 WHERE fc_id = $1 LIMIT 1
 `
 
@@ -100,7 +100,7 @@ func (q *Queries) GetfootballclubByID(ctx context.Context, fcID int32) (Football
 }
 
 const getfootballclubByName = `-- name: GetfootballclubByName :one
-SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclub
+SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclubs
 WHERE club_name = $1
 `
 
@@ -118,7 +118,7 @@ func (q *Queries) GetfootballclubByName(ctx context.Context, clubName string) (F
 }
 
 const listfootballclub = `-- name: Listfootballclub :many
-SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclub
+SELECT fc_id, club_name, country_fc, balance, created_at FROM footballclubs
 ORDER BY fc_id OFFSET $1 LIMIT $2
 `
 
@@ -157,7 +157,7 @@ func (q *Queries) Listfootballclub(ctx context.Context, arg ListfootballclubPara
 }
 
 const updatefootballclubBalance = `-- name: UpdatefootballclubBalance :exec
-UPDATE footballclub
+UPDATE footballclubs
 SET balance = $2
 WHERE fc_id = $1
 `

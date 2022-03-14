@@ -60,7 +60,7 @@ func TestQueries_GettransferByPlayerid(t *testing.T) {
 	testGetTransferdata , testGetTransferErr := testQueries.GettransferByPlayerid(context.Background(), testTransfer.PlayerID)
 
 	require.NoError(t,testGetTransferErr)
-	require.Equal(t, testTransfer, testGetTransferdata)
+	require.Equal(t, testTransfer, testGetTransferdata[0])
 }
 
 func TestQueries_GettransferByTransferid(t *testing.T) {

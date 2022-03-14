@@ -8,7 +8,7 @@ import (
 )
 
 const createplayer = `-- name: Createplayer :one
-INSERT INTO player(
+INSERT INTO players(
     player_name,
     position,
     country_pl,
@@ -50,7 +50,7 @@ func (q *Queries) Createplayer(ctx context.Context, arg CreateplayerParams) (Pla
 }
 
 const deletePlayerByClubID = `-- name: DeletePlayerByClubID :exec
-DELETE FROM player
+DELETE FROM players
 WHERE footballclub_id = $1
 `
 
@@ -60,7 +60,7 @@ func (q *Queries) DeletePlayerByClubID(ctx context.Context, footballclubID int32
 }
 
 const deleteplayer = `-- name: Deleteplayer :exec
-DELETE FROM player
+DELETE FROM players
 WHERE player_name = $1
 `
 
@@ -70,7 +70,7 @@ func (q *Queries) Deleteplayer(ctx context.Context, playerName string) error {
 }
 
 const getPlayersList = `-- name: GetPlayersList :many
-SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player
+SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM players
 ORDER BY p_id OFFSET $1 LIMIT $2
 `
 
@@ -111,7 +111,7 @@ func (q *Queries) GetPlayersList(ctx context.Context, arg GetPlayersListParams) 
 }
 
 const getplayerByCountry = `-- name: GetplayerByCountry :many
-SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player
+SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM players
 WHERE country_pl = $1
 `
 
@@ -147,7 +147,7 @@ func (q *Queries) GetplayerByCountry(ctx context.Context, countryPl string) ([]P
 }
 
 const getplayerByFootballclub = `-- name: GetplayerByFootballclub :many
-SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player
+SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM players
 WHERE footballclub_id = $1
 `
 
@@ -183,7 +183,7 @@ func (q *Queries) GetplayerByFootballclub(ctx context.Context, footballclubID in
 }
 
 const getplayerByID = `-- name: GetplayerByID :one
-SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player 
+SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM players 
 WHERE p_id = $1
 `
 
@@ -203,7 +203,7 @@ func (q *Queries) GetplayerByID(ctx context.Context, pID int32) (Player, error) 
 }
 
 const getplayerByName = `-- name: GetplayerByName :one
-SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player 
+SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM players 
 WHERE player_name = $1
 `
 
@@ -223,7 +223,7 @@ func (q *Queries) GetplayerByName(ctx context.Context, playerName string) (Playe
 }
 
 const getplayerByPosition = `-- name: GetplayerByPosition :many
-SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player
+SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM players
 WHERE position = $1
 `
 
@@ -259,7 +259,7 @@ func (q *Queries) GetplayerByPosition(ctx context.Context, position string) ([]P
 }
 
 const getplayerByValueHigherthan = `-- name: GetplayerByValueHigherthan :many
-SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player
+SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM players
 WHERE value >= $1
 `
 
@@ -295,7 +295,7 @@ func (q *Queries) GetplayerByValueHigherthan(ctx context.Context, value int64) (
 }
 
 const getplayerByValueLessthan = `-- name: GetplayerByValueLessthan :many
-SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM player 
+SELECT p_id, player_name, position, country_pl, value, footballclub_id, created_at FROM players 
 WHERE value <= $1
 `
 
@@ -331,7 +331,7 @@ func (q *Queries) GetplayerByValueLessthan(ctx context.Context, value int64) ([]
 }
 
 const updateplayer = `-- name: Updateplayer :exec
-UPDATE player
+UPDATE players
 SET value = $2, footballclub_id =$3
 WHERE p_id = $1
 `
