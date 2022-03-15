@@ -6,22 +6,27 @@ import (
 	"fmt"
 )
 
+type Transaction interface {
+	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
+	Querier
+}
+
 //we we will execute transaction using this struct
-type Transaction struct {
+type SQLTransaction struct {
 	*Queries
 	db *sql.DB
 }
 
-//creates new object of Transaction struct
-func NewTransaction(db *sql.DB) *Transaction {
-	return &Transaction{
+//creates new object of SQLTransaction struct
+func NewTransaction(db *sql.DB) Transaction {
+	return &SQLTransaction{
 		db:      db,
 		Queries: New(db),
 	}
 }
 
 //execute multiple DB queries in one function to complete one transaction
-func (transaction *Transaction) execTx(ctx context.Context, fn func(*Queries) error) error {
+func (transaction *SQLTransaction) execTx(ctx context.Context, fn func(*Queries) error) error {
 
 	//begin
 	tx, txErr := transaction.db.BeginTx(context.Background(), nil)
@@ -67,7 +72,7 @@ type TransferTxResult struct {
 	Player          Player       `json:"player"`
 }
 
-func (t Transaction) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
+func (t SQLTransaction) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
 	var result TransferTxResult
 
 	execTxErr := t.execTx(ctx, func(q *Queries) error {

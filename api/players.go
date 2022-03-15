@@ -231,7 +231,7 @@ func (server *Server) updatePlayer(ctx *gin.Context) {
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerValueUpdate.FootballclubName+ " no data found"))
+			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerValueUpdate.FootballclubName+" no data found"))
 			// fmt.Println("player ", DBError)
 			return
 		}
@@ -263,7 +263,7 @@ func (server *Server) removePlayer(ctx *gin.Context) {
 	//check whether the player exists or not
 	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
 	if DBError != nil {
-		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerName + " no data found"))
+		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerName+" no data found"))
 		// fmt.Println("player ", DBError)
 		return
 	}

@@ -12,14 +12,14 @@ import (
 
 //server for HTTP request
 type Server struct {
-	transaction *DB.Transaction
+	transaction DB.Transaction
 	tokenMaker  token.Maker
 	router      *gin.Engine
 	accessTime  time.Duration
 }
 
 //NewServer creates a new HTTP server and set up routing
-func NewServer(transaction *DB.Transaction, secureKay string, accessTime time.Duration) *Server {
+func NewServer(transaction DB.Transaction, secureKay string, accessTime time.Duration) *Server {
 	router := gin.Default()
 	tokenMaker, err := token.NewJWTMaker(secureKay)
 	// tokenMaker, err := token.NewPasetoMaker(secureKay)
