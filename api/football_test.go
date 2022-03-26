@@ -78,23 +78,6 @@ func TestNameFootballclub(t *testing.T) {
 
 		})
 	}
-
-	// ctrl := gomock.NewController(t)
-	// defer ctrl.Finish()
-
-	// trans := mockdb.NewMockTransaction(ctrl)
-	// //build stub
-	// trans.EXPECT().GetfootballclubByName(gomock.Any(), gomock.Eq(testFootballclub.ClubName)).Times(1).Return(testFootballclub, nil)
-
-	// //start test server
-	// server := NewServer(trans, Util.RandomStringGenerator(32), time.Minute)
-	// recorder := httptest.NewRecorder()
-	// url := fmt.Sprintf("/footballclub/nameFootballclub/%v", testFootballclub.ClubName)
-	// request, err := http.NewRequest(http.MethodGet, url, nil)
-	// require.NoError(t, err)
-	// addAuthorization(t, request, server.TokenMaker, "Bearer", "user", time.Minute)
-	// server.Router.ServeHTTP(recorder, request)
-	// require.Equal(t, http.StatusOK, recorder.Code)
 }
 
 func FootballclubDataTest() DB.Footballclub {
