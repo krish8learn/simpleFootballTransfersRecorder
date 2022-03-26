@@ -12,10 +12,10 @@ import (
 
 //server for HTTP request
 type Server struct {
-	transaction DB.Transaction
-	tokenMaker  token.Maker
-	router      *gin.Engine
-	accessTime  time.Duration
+	Transaction DB.Transaction
+	TokenMaker  token.Maker
+	Router      *gin.Engine
+	AccessTime  time.Duration
 }
 
 //NewServer creates a new HTTP server and set up routing
@@ -28,13 +28,13 @@ func NewServer(transaction DB.Transaction, secureKay string, accessTime time.Dur
 	}
 
 	server := &Server{
-		transaction: transaction,
-		tokenMaker:  tokenMaker,
-		router:      router,
-		accessTime:  accessTime,
+		Transaction: transaction,
+		TokenMaker:  tokenMaker,
+		Router:      router,
+		AccessTime:  accessTime,
 	}
 
-	authRouter := router.Group("/").Use(middleware.AuthMiddleware(server.tokenMaker))
+	authRouter := router.Group("/").Use(middleware.AuthMiddleware(server.TokenMaker))
 
 	router.GET("/home", server.homePage)
 
@@ -72,5 +72,5 @@ func NewServer(transaction DB.Transaction, secureKay string, accessTime time.Dur
 
 // to start listening of server on a port
 func (server *Server) Start(address string) error {
-	return server.router.Run(address)
+	return server.Router.Run(address)
 }

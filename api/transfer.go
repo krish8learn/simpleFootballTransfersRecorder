@@ -33,7 +33,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 	}
 
 	//check player exist or not
-	playerDB, DBError := server.transaction.GetplayerByName(ctx, transferCreate.PlayerName)
+	playerDB, DBError := server.Transaction.GetplayerByName(ctx, transferCreate.PlayerName)
 	if DBError != nil {
 		// error present , player does not exist in table
 		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(transferCreate.PlayerName+" no data found"))
@@ -41,7 +41,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 	}
 
 	//source club checking
-	sourceFootballClubDB, DBError := server.transaction.GetfootballclubByName(context.Background(), transferCreate.SourceClubName)
+	sourceFootballClubDB, DBError := server.Transaction.GetfootballclubByName(context.Background(), transferCreate.SourceClubName)
 	if DBError != nil {
 		// error present , club does not exist in table
 		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(transferCreate.SourceClubName+" no data found"))
@@ -55,14 +55,14 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 	}
 
 	//destination club checking
-	destinationFootballclub, DBError := server.transaction.GetfootballclubByName(ctx, transferCreate.DestinationClubName)
+	destinationFootballclub, DBError := server.Transaction.GetfootballclubByName(ctx, transferCreate.DestinationClubName)
 	if DBError != nil {
 		// error present , club does not exist in table
 		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(transferCreate.DestinationClubName+" no data found"))
 		return
 	}
 
-	//now we perform transaction
+	//now we perform Transaction
 	arg := DB.TransferTxParams{
 		Season:            transferCreate.Season,
 		PlayerID:          playerDB.PID,
@@ -70,7 +70,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 		DestinationClubID: destinationFootballclub.FcID,
 		Amount:            transferCreate.Amount,
 	}
-	result, txError := server.transaction.TransferTx(ctx, arg)
+	result, txError := server.Transaction.TransferTx(ctx, arg)
 	if txError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
@@ -83,7 +83,7 @@ func (server *Server) playerNameTransfer(ctx *gin.Context) {
 	playerName := ctx.Param("name")
 
 	//check player availability
-	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
+	dbPlayer, DBError := server.Transaction.GetplayerByName(ctx, playerName)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -98,7 +98,7 @@ func (server *Server) playerNameTransfer(ctx *gin.Context) {
 	}
 
 	//get transfer
-	dbTransfer, DBError := server.transaction.GettransferByPlayerid(ctx, dbPlayer.PID)
+	dbTransfer, DBError := server.Transaction.GettransferByPlayerid(ctx, dbPlayer.PID)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -138,7 +138,7 @@ func (server *Server) listTransfers(ctx *gin.Context) {
 
 	// fmt.Println("--->", arg)
 
-	dbTransferList, DBError := server.transaction.GettransferList(ctx, arg)
+	dbTransferList, DBError := server.Transaction.GettransferList(ctx, arg)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -162,7 +162,7 @@ func (server *Server) listTransfers(ctx *gin.Context) {
 }
 
 func (server *Server) maxTransfer(ctx *gin.Context) {
-	dbMaxTansfer, DBError := server.transaction.Highesttransfer(ctx)
+	dbMaxTansfer, DBError := server.Transaction.Highesttransfer(ctx)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
@@ -190,7 +190,7 @@ func (server *Server) amountTransfer(ctx *gin.Context) {
 
 	//need to get the t_id
 	//get the player_id
-	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, transferInput.PlayerName)
+	dbPlayer, DBError := server.Transaction.GetplayerByName(ctx, transferInput.PlayerName)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -209,7 +209,7 @@ func (server *Server) amountTransfer(ctx *gin.Context) {
 		PlayerID:        dbPlayer.PID,
 		DestinationClub: dbPlayer.FootballclubID,
 	}
-	dbTransfer, DBError := server.transaction.Latesttransfer(ctx, arg)
+	dbTransfer, DBError := server.Transaction.Latesttransfer(ctx, arg)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -228,7 +228,7 @@ func (server *Server) amountTransfer(ctx *gin.Context) {
 		Amount: transferInput.Amount,
 	}
 
-	DBError = server.transaction.Updatetransfer(ctx, argUpdate)
+	DBError = server.Transaction.Updatetransfer(ctx, argUpdate)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
@@ -242,7 +242,7 @@ func (server *Server) removeTransfer(ctx *gin.Context) {
 	playerName := ctx.Param("name")
 
 	//check the player in table
-	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
+	dbPlayer, DBError := server.Transaction.GetplayerByName(ctx, playerName)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -257,7 +257,7 @@ func (server *Server) removeTransfer(ctx *gin.Context) {
 	}
 
 	//get the latest transfer
-	dbTransfer, DBError := server.transaction.GetLasttransferByPlayerid(ctx, dbPlayer.PID)
+	dbTransfer, DBError := server.Transaction.GetLasttransferByPlayerid(ctx, dbPlayer.PID)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -271,7 +271,7 @@ func (server *Server) removeTransfer(ctx *gin.Context) {
 		return
 	}
 
-	DBError = server.transaction.Deletetransfer(ctx, dbTransfer.TID)
+	DBError = server.Transaction.Deletetransfer(ctx, dbTransfer.TID)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)

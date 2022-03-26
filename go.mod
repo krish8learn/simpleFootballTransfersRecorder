@@ -3,9 +3,9 @@ module github.com/krish8learn/simpleFootballTransfersRecorder
 go 1.17
 
 require (
-	github.com/golang/mock/mockgen/model v1.6.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.7.7
+	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
 	github.com/lib/pq v1.10.4
 	github.com/o1egl/paseto v1.0.0

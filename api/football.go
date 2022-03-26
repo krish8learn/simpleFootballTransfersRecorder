@@ -31,7 +31,7 @@ func (server *Server) createFootballclub(ctx *gin.Context) {
 	}
 
 	//check whether club already exist or not
-	_, DBError := server.transaction.GetfootballclubByName(ctx, footballclubCreate.ClubName)
+	_, DBError := server.Transaction.GetfootballclubByName(ctx, footballclubCreate.ClubName)
 	if DBError != nil {
 		//if the club does not exist, it must throw an error ("sql: no rows in result set" )
 		// must create data
@@ -41,7 +41,7 @@ func (server *Server) createFootballclub(ctx *gin.Context) {
 			Balance:   footballclubCreate.Balance,
 		}
 
-		createdFootballclub, DBError := server.transaction.Createfootballclub(ctx, arg)
+		createdFootballclub, DBError := server.Transaction.Createfootballclub(ctx, arg)
 		if DBError != nil {
 			ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 			// fmt.Println("player ", DBError)
@@ -80,7 +80,7 @@ func (server *Server) listFootballclubs(ctx *gin.Context) {
 
 	// fmt.Println("--->", arg)
 
-	dbfootballclubList, DBError := server.transaction.Listfootballclub(ctx, arg)
+	dbfootballclubList, DBError := server.Transaction.Listfootballclub(ctx, arg)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -108,7 +108,7 @@ func (server *Server) nameFootballclub(ctx *gin.Context) {
 	//getting the value from URL path
 	name := ctx.Param("name")
 
-	dbfootballclub, DBError := server.transaction.GetfootballclubByName(ctx, name)
+	dbfootballclub, DBError := server.Transaction.GetfootballclubByName(ctx, name)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -129,7 +129,7 @@ func (server *Server) countryFootballclubs(ctx *gin.Context) {
 	//getting the value from URL path
 	countryName := ctx.Param("country")
 
-	dbfootballclub, DBError := server.transaction.GetfootballclubByCountry(ctx, countryName)
+	dbfootballclub, DBError := server.Transaction.GetfootballclubByCountry(ctx, countryName)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -156,7 +156,7 @@ func (server *Server) playerNameFootballclub(ctx *gin.Context) {
 	playerName := ctx.Param("player")
 
 	//check whether the player in the DB
-	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
+	dbPlayer, DBError := server.Transaction.GetplayerByName(ctx, playerName)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -170,7 +170,7 @@ func (server *Server) playerNameFootballclub(ctx *gin.Context) {
 		return
 	}
 
-	dbfootballclub, DBError := server.transaction.GetfootballclubByID(ctx, dbPlayer.FootballclubID)
+	dbfootballclub, DBError := server.Transaction.GetfootballclubByID(ctx, dbPlayer.FootballclubID)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -203,7 +203,7 @@ func (server *Server) updateBalanceFootballclub(ctx *gin.Context) {
 	}
 
 	//check whether club already exist or not
-	existFootballClub, DBError := server.transaction.GetfootballclubByName(ctx, footballclubUpdate.ClubName)
+	existFootballClub, DBError := server.Transaction.GetfootballclubByName(ctx, footballclubUpdate.ClubName)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -222,7 +222,7 @@ func (server *Server) updateBalanceFootballclub(ctx *gin.Context) {
 		Balance: footballclubUpdate.Balance,
 	}
 
-	DBError = server.transaction.UpdatefootballclubBalance(ctx, arg)
+	DBError = server.Transaction.UpdatefootballclubBalance(ctx, arg)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
@@ -236,21 +236,21 @@ func (server *Server) removeFootballclub(ctx *gin.Context) {
 	//getting the value from URL path
 	name := ctx.Param("name")
 
-	dbfootballclub, DBError := server.transaction.GetfootballclubByName(ctx, name)
+	dbfootballclub, DBError := server.Transaction.GetfootballclubByName(ctx, name)
 	if DBError != nil {
 		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(name+" no data found"))
 		return
 	}
 
 	//before performing deletion of club, need remove all the player related to that club
-	DBError = server.transaction.DeletePlayerByClubID(ctx, dbfootballclub.FcID)
+	DBError = server.Transaction.DeletePlayerByClubID(ctx, dbfootballclub.FcID)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
 		return
 	}
 
-	DBError = server.transaction.Deletefootballclub(ctx, dbfootballclub.ClubName)
+	DBError = server.Transaction.Deletefootballclub(ctx, dbfootballclub.ClubName)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)

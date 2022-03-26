@@ -7,8 +7,8 @@ import (
 )
 
 type Transaction interface {
-	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
 	Querier
+	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
 }
 
 //we we will execute transaction using this struct

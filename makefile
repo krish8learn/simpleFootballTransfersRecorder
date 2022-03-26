@@ -28,8 +28,10 @@ sqlccompile:
 test:
 	go test -v cover ./...
 
+mock:
+	mockgen -package mockdb -destination DB/mock/tranaction.go github.com/krish8learn/simpleFootballTransfersRecorder/DB/sqlc Transaction
+
 gomod:
 	go mod tidy -compat=1.17	
 
-
-.PHONY: postgres createdb dropdb migrateup migratedown sqlcgen sqlccompile test gomod
+.PHONY: postgres createdb dropdb migrateup migratedown sqlcgen sqlccompile test gomod mock

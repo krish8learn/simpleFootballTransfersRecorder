@@ -58,7 +58,7 @@ func (server *Server) Createusers(ctx *gin.Context) {
 		Email:          userCreate.Email,
 	}
 
-	_, DBError := server.transaction.Createusers(ctx, arg)
+	_, DBError := server.Transaction.Createusers(ctx, arg)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
@@ -90,7 +90,7 @@ func (server *Server) Loginuser(ctx *gin.Context) {
 	}
 
 	//check user
-	user, DBError := server.transaction.GetUsers(ctx, userLogin.Username)
+	user, DBError := server.Transaction.GetUsers(ctx, userLogin.Username)
 	if DBError != nil {
 		if DBError == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(userLogin.Username+" no data found"))
@@ -112,7 +112,7 @@ func (server *Server) Loginuser(ctx *gin.Context) {
 	}
 
 	//password right, issue token
-	tokenString, tokenErr := server.tokenMaker.CreateToken(user.Username, server.accessTime)
+	tokenString, tokenErr := server.TokenMaker.CreateToken(user.Username, server.AccessTime)
 	if tokenErr != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(tokenErr))
 		return

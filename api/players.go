@@ -32,7 +32,7 @@ func (server *Server) createPlayer(ctx *gin.Context) {
 	}
 
 	//getting footballclub_id based on name
-	footballclubFromreq, DBError := server.transaction.GetfootballclubByName(ctx, playerCreate.ClubName)
+	footballclubFromreq, DBError := server.Transaction.GetfootballclubByName(ctx, playerCreate.ClubName)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -55,7 +55,7 @@ func (server *Server) createPlayer(ctx *gin.Context) {
 		FootballclubID: footballclubFromreq.FcID,
 	}
 	//inserting player data
-	playerInserted, DBError := server.transaction.Createplayer(ctx, arg)
+	playerInserted, DBError := server.Transaction.Createplayer(ctx, arg)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
@@ -84,7 +84,7 @@ func (server *Server) listPlayers(ctx *gin.Context) {
 		Limit:  int32(playerList.PageSize),
 	}
 
-	dbPlayerList, DBError := server.transaction.GetPlayersList(ctx, arg)
+	dbPlayerList, DBError := server.Transaction.GetPlayersList(ctx, arg)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -104,7 +104,7 @@ func (server *Server) listPlayers(ctx *gin.Context) {
 func (server *Server) namePlayer(ctx *gin.Context) {
 	playerName := ctx.Param("name")
 
-	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
+	dbPlayer, DBError := server.Transaction.GetplayerByName(ctx, playerName)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -124,7 +124,7 @@ func (server *Server) namePlayer(ctx *gin.Context) {
 func (server *Server) positionPlayer(ctx *gin.Context) {
 	position := ctx.Param("position")
 
-	dbPlayers, DBError := server.transaction.GetplayerByPosition(ctx, position)
+	dbPlayers, DBError := server.Transaction.GetplayerByPosition(ctx, position)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -144,7 +144,7 @@ func (server *Server) positionPlayer(ctx *gin.Context) {
 func (server *Server) countryPlayer(ctx *gin.Context) {
 	country := ctx.Param("country")
 
-	dbPlayers, DBError := server.transaction.GetplayerByCountry(ctx, country)
+	dbPlayers, DBError := server.Transaction.GetplayerByCountry(ctx, country)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -165,7 +165,7 @@ func (server *Server) footballclubPlayers(ctx *gin.Context) {
 	club := ctx.Param("club")
 
 	//get football club id
-	dbFootballclub, DBError := server.transaction.GetfootballclubByName(ctx, club)
+	dbFootballclub, DBError := server.Transaction.GetfootballclubByName(ctx, club)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -179,7 +179,7 @@ func (server *Server) footballclubPlayers(ctx *gin.Context) {
 		return
 	}
 
-	dbPlayers, DBError := server.transaction.GetplayerByFootballclub(ctx, dbFootballclub.FcID)
+	dbPlayers, DBError := server.Transaction.GetplayerByFootballclub(ctx, dbFootballclub.FcID)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -212,7 +212,7 @@ func (server *Server) updatePlayer(ctx *gin.Context) {
 		return
 	}
 
-	existPlayer, DBError := server.transaction.GetplayerByName(ctx, playerValueUpdate.PlayerName)
+	existPlayer, DBError := server.Transaction.GetplayerByName(ctx, playerValueUpdate.PlayerName)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -227,7 +227,7 @@ func (server *Server) updatePlayer(ctx *gin.Context) {
 	}
 
 	//find new transfer club by name
-	existFootballClub, DBError := server.transaction.GetfootballclubByName(ctx, playerValueUpdate.FootballclubName)
+	existFootballClub, DBError := server.Transaction.GetfootballclubByName(ctx, playerValueUpdate.FootballclubName)
 	if DBError != nil {
 		//error present, check type of error
 		if DBError == sql.ErrNoRows {
@@ -247,7 +247,7 @@ func (server *Server) updatePlayer(ctx *gin.Context) {
 		FootballclubID: existFootballClub.FcID,
 	}
 
-	DBError = server.transaction.Updateplayer(ctx, arg)
+	DBError = server.Transaction.Updateplayer(ctx, arg)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
@@ -261,14 +261,14 @@ func (server *Server) removePlayer(ctx *gin.Context) {
 	playerName := ctx.Param("name")
 
 	//check whether the player exists or not
-	dbPlayer, DBError := server.transaction.GetplayerByName(ctx, playerName)
+	dbPlayer, DBError := server.Transaction.GetplayerByName(ctx, playerName)
 	if DBError != nil {
 		ctx.JSON(http.StatusNotFound, Util.ErrorHTTPCustomNotFoundResponse(playerName+" no data found"))
 		// fmt.Println("player ", DBError)
 		return
 	}
 
-	DBError = server.transaction.Deleteplayer(ctx, dbPlayer.PlayerName)
+	DBError = server.Transaction.Deleteplayer(ctx, dbPlayer.PlayerName)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)

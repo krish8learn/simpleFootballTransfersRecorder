@@ -22,7 +22,7 @@ func RandomIntGenerator(min, max int64) int64 {
 }
 
 /*Need --> Generate Random string*/
-const alphabet = "abcdefghijklmopqrstuvwxyz"
+const alphabet = "abcdefghijklmopqrstuvwxyzabcdefghijklmopqrstuvwxyzabcdefghijklmopqrstuvwxyz"
 
 func RandomStringGenerator(n int) string {
 	length := len(alphabet)
