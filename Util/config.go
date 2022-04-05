@@ -8,11 +8,12 @@ import (
 )
 
 type Config struct {
-	DBDriver    string        `mapstructure:"DB_DRIVER"`
-	DBSource    string        `mapstructure:"DB_SOURCE"`
-	Port        string        `mapstructure:"PORT"`
-	SecurityKey string        `mapstructure:"SECURITY_KEY"`
-	AccessTime  time.Duration `mapstructure:"ACCESS_TIME"`
+	DBDriver             string        `mapstructure:"DB_DRIVER"`
+	DBSource             string        `mapstructure:"DB_SOURCE"`
+	Port                 string        `mapstructure:"PORT"`
+	SecurityKey          string        `mapstructure:"SECURITY_KEY"`
+	AccessTime           time.Duration `mapstructure:"ACCESS_TIME"`
+	AuthorizationPresent string        `mapstructure:"AUTH"`
 }
 
 func LoadConfig(path string) (config Config, readConfigErr error) {
