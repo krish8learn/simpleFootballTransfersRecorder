@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -58,14 +59,14 @@ func (server *Server) Createusers(ctx *gin.Context) {
 		Email:          userCreate.Email,
 	}
 
-	_, DBError := server.Transaction.Createusers(ctx, arg)
+	createdUser, DBError := server.Transaction.Createusers(ctx, arg)
 	if DBError != nil {
 		ctx.JSON(http.StatusInternalServerError, Util.ErrorHTTPResponse(DBError))
 		// fmt.Println("player ", DBError)
 		return
 	}
-
-	ctx.JSON(http.StatusOK, "User Created , Relogin")
+	result := fmt.Sprintf("User Created %v, Relogin", createdUser.Username)
+	ctx.JSON(http.StatusOK, result)
 	return
 }
 
