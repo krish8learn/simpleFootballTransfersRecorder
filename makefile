@@ -26,7 +26,7 @@ sqlccompile:
 	sqlc compile
 
 test:
-	go test -v cover ./...
+	go test -v -cover ./...
 
 mock:
 	mockgen -package mockdb -destination DB/mock/tranaction.go github.com/krish8learn/simpleFootballTransfersRecorder/DB/sqlc Transaction
