@@ -1,3 +1,5 @@
+DB_URL=postgresql://root:krish@knight8@localhost:5432/simple_transfers?sslmode=disable
+
 postgres start:
 	sudo docker run --name postgres -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=krish@knight8 -d postgres
 
@@ -8,16 +10,16 @@ dropdb:
 	sudo docker exec -it postgres dropdb --username=root --owner=root simple_transfers
 
 migrateup:
-	migrate -path DB/migration -database "postgresql://root:krish@knight8@localhost:5432/simple_transfers?sslmode=disable" -verbose up
+	migrate -path DB/migration -database "$(DB_URL)" -verbose up
 
 migrateup1:
-	migrate -path DB/migration -database "postgresql://root:krish@knight8@localhost:5432/simple_transfers?sslmode=disable" -verbose up 1
+	migrate -path DB/migration -database "$(DB_URL)" -verbose up 1
 
 migratedown:
-	migrate -path DB/migration -database "postgresql://root:krish@knight8@localhost:5432/simple_transfers?sslmode=disable" -verbose down
+	migrate -path DB/migration -database "$(DB_URL)" -verbose down
 
 migratedown1:
-	migrate -path DB/migration -database "postgresql://root:krish@knight8@localhost:5432/simple_transfers?sslmode=disable" -verbose down 1
+	migrate -path DB/migration -database "$(DB_URL)" -verbose down 1
 
 sqlcgen:
 	sqlc generate 
