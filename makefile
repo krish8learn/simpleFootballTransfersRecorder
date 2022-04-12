@@ -1,7 +1,7 @@
-DB_URL=postgresql://root:krish@knight8@localhost:5432/simple_transfers?sslmode=disable
+DB_URL=postgresql://root:secret@localhost:5432/simple_transfers?sslmode=disable
 
 postgres start:
-	sudo docker run --name postgres -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=krish@knight8 -d postgres
+	sudo docker run --name postgres -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres
 
 createdb:
 	sudo docker exec -it postgres createdb --username=root --owner=root simple_transfers

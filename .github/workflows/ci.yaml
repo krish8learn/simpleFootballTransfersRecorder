@@ -25,7 +25,7 @@ jobs:
         env:
           POSTGRES_USER: root
           POSTGRES_DB: simple_transfers
-          POSTGRES_PASSWORD: krish@knight8
+          POSTGRES_PASSWORD: secret
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
