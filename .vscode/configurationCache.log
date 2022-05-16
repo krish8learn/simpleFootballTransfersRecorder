@@ -1,0 +1,1 @@
+{"buildTargets":["createdb","dropdb","gomod","migratedown","migratedown1","migrateup","migrateup1","mock","postgres","sqlccompile","sqlcgen","start","test"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}
